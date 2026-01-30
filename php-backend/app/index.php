@@ -10,6 +10,7 @@
 
 <?php
 session_start();
+require_once("../db.php");
 
 if (isset($_SESSION["user_id"])) {
   header("Location: /app/crud");
@@ -18,8 +19,24 @@ if (isset($_SESSION["user_id"])) {
   $email = sanitize_input($email);
   $password = sanitize_input($password);
   // TODO: add SQL authentication here
-  $_SESSION["user_id"] = 1;
-  header("Location: /app/crud");
+
+  $stmt = $conn->prepare("SELECT id, username, password FROM users WHERE username = ?");
+  $stmt->bind_param("s", $email);
+  $stmt->execute();
+  $result = $stmt->get_result();
+
+  if ($user = $result->fetch_assoc()) {
+    if ($password === $user['password']) {
+      $_SESSION["user_id"] = $user['id'];
+      $_SESSION["username"] = $user['username'];
+      header("Location: ./app/crud");
+      exit();
+    } else {
+      echo "<p style='color:red;'>Password mismatch.</p>";
+    }
+  } else {
+    echo "<p style='color:red;'>User not found.</p>";
+  }
 }
 
 ?>
