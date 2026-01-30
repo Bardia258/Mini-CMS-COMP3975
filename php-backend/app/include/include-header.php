@@ -7,6 +7,7 @@
     <meta charset="utf-8">
 </head>
 <body>
+    <?php include("include-functions.php") ?>
     <div class="container">
 
 

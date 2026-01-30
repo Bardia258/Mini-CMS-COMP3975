@@ -9,15 +9,18 @@
 </form>
 
 <?php
-  session_start();
-  if (isset($_SESSION["user_id"])) {
-    header("Location: /app/crud");
-  } else if (isset($_POST["email"]) && isset($_POST["password"])) {
-    extract($_POST);
-    // TODO: add SQL authentication here
-    $_SESSION["user_id"] = 1;
-    header("Location: /crud");
-  }
+session_start();
+
+if (isset($_SESSION["user_id"])) {
+  header("Location: /app/crud");
+} else if (isset($_POST["email"]) && isset($_POST["password"])) {
+  extract($_POST);
+  $email = sanitize_input($email);
+  $password = sanitize_input($password);
+  // TODO: add SQL authentication here
+  $_SESSION["user_id"] = 1;
+  header("Location: /app/crud");
+}
 
 ?>
 
