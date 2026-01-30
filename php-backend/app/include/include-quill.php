@@ -2,7 +2,10 @@
 <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet" />
 
 <!-- Create the editor container -->
-<div id="editor"></div>
+<form action="" method="post">
+  <div id="editor"></div>
+  <input type="submit" class="btn btn-success" value="Submit">
+</form>
 
 <!-- Include the Quill library -->
 <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
