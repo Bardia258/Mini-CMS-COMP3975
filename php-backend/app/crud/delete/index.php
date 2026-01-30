@@ -1,5 +1,4 @@
-<?php include("../../include/include-header.php");
-include("../../include/include-authentication.php"); ?>
+<?php include("../../include/include-crud-header.php")?>
 
 
 
