@@ -1,4 +1,5 @@
-<?php include("../../include/include-header.php") ?>
+<?php include("../../include/include-header.php");
+include("../../include/include-authentication.php"); ?>
 
 
 
