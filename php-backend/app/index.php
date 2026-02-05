@@ -18,7 +18,6 @@ if (isset($_SESSION["user_id"])) {
   extract($_POST);
   $email = sanitize_input($email);
   $password = sanitize_input($password);
-  // TODO: add SQL authentication here
 
   $stmt = $conn->prepare("SELECT id, username, password FROM users WHERE username = ?");
   $stmt->bind_param("s", $email);

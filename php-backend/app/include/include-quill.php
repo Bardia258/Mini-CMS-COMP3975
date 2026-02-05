@@ -2,9 +2,11 @@
 <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet" />
 
 <!-- Create the editor container -->
-<form action="" method="post">
-  <div id="editor"></div>
-  <input type="submit" class="btn btn-success" value="Submit">
+<form class="container mt-3" action="" method="post">
+  <label for="title">Post Title:</label><br>
+  <input id="title" name="title" required><br><br>
+  <div id="editor" name="content" class="mt-2"></div>
+  <input type="submit" class="btn btn-success mt-2" value="Submit">
 </form>
 
 <!-- Include the Quill library -->
