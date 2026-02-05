@@ -1,11 +1,10 @@
 <?php include("../../include/include-crud-header.php") ?>
 <?php require_once("../../../db.php") ?>
-<?php #include("../../include/include-quill.php") 
-?>
 
 <!-- Include stylesheet -->
 <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet" />
 
+<h1 class="text-center">Create Article:</h1>
 <!-- Create the editor container -->
 <form class="mt-2" action="" method="post" onsubmit="return handleFormSubmit()">
     <label for="posttitle">Post Title:</label><br>
@@ -26,19 +25,16 @@
 
     function handleFormSubmit() {
         var quillContent = quill.root.innerHTML;
-
         document.getElementById('hidden-content').value = quillContent;
-
         return true;
     }
 </script>
 
 <?php
-
 if (isset($_POST["content"]) && isset($_POST["posttitle"])) {
 
     extract($_POST);
-    $content = sanitize_input($content);
+    $content = sanitize_html($content);
     $title = sanitize_input($posttitle);
     $stmt = $conn->prepare("INSERT INTO articles (title, content)
                                         VALUES (?, ?);");
