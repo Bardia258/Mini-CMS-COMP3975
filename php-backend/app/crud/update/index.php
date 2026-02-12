@@ -5,13 +5,6 @@
 if (!isset($_GET["id"])) {
     die("ID is not set!");
 }
-
-$id = sanitize_input($_GET['id']);
-$stmt = $conn->prepare("SELECT title, content FROM articles WHERE id=?;");
-
-$stmt->bind_param("s", $id);
-$stmt->execute();
-$result = $stmt->get_result()->fetch_assoc();
 ?>
 
 <!-- Include stylesheet -->
@@ -21,8 +14,8 @@ $result = $stmt->get_result()->fetch_assoc();
 <!-- Create the editor container -->
 <form class="mt-2" action="" method="post" onsubmit="return handleFormSubmit()">
     <label for="posttitle">Post Title:</label><br>
-    <input id="posttitle" name="posttitle" required value=<?php echo $result['title'] ?>><br><br>
-    <div id="editor" name="content" class="mt-2"><?php echo $result['content']."\n" ?></div>
+    <input id="posttitle" name="posttitle" required value=><br><br>
+    <div id="editor" name="content" class="mt-2"></div>
     <input type="hidden" name="content" id="hidden-content">
     <input type="submit" class="btn btn-success mt-2" value="Submit">
 </form>
@@ -39,6 +32,27 @@ $result = $stmt->get_result()->fetch_assoc();
         document.getElementById('hidden-content').value = quillContent;
         return true;
     }
+
+    var baseUrl = "http://localhost:8888";
+    const urlParams = new URLSearchParams(window.location.search);
+    const id = urlParams.get('id');
+
+    var getData = async function() {
+        var url = baseUrl + `/articles/${id}`;
+
+        await fetch(url)
+            .then((response) => {
+                return response.json();
+            })
+            .then((data) => {
+                document.getElementById("posttitle").value = data.title;
+                quill.root.innerHTML = data.content;
+            });
+
+        return false;
+    };
+
+    getData()
 </script>
 
 <?php

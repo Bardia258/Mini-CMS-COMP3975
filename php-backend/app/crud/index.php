@@ -1,5 +1,5 @@
 <?php include("../include/include-crud-header.php") ?>
-<?php require_once("../../db.php")?>
+<?php require_once("../../db.php") ?>
 
 <h2 class="text-center">CRUD Interface</h2>
 <a href="/app/crud/create" class="btn btn-success">Create new article</a><br>
@@ -12,26 +12,50 @@
             <th scope="col">Options:</th>
         </tr>
     </thead>
-    <tbody>
-        <?php
-        $stmt = $conn->execute_query("SELECT title, content, created_at, id FROM articles ORDER BY created_at DESC");
-        $rows = $stmt->fetch_all();
-        echo "\n";
-        foreach ($rows as $row) {
-            echo "\t\t<tr>\n";
-            echo "\t\t\t<td>{$row[0]}</td>\n";
-            echo "\t\t\t<td>{$row[1]}</td>\n";
-            echo "\t\t\t<td>{$row[2]}</td>\n";
-            echo "\t\t\t<td>\n";
-            echo "\t\t\t\t<a class='btn btn-success mt-2' href='/app/crud/read?id={$row[3]}'>Read</a>\n";
-            echo "\t\t\t\t<a class='btn btn-warning mt-2' href='/app/crud/update?id={$row[3]}'>Edit</a>\n";
-            echo "\t\t\t\t<a class='btn btn-danger mt-2' href='/app/crud/delete?id={$row[3]}'>Delete</a>\n";
-            echo "\t\t\t</td>\n";
-            echo "\t\t</tr>\n";
-        }
-        ?>
-
-    </tbody>
+    <tbody id="crud-info"></tbody>
 </table>
+
+<template id="article-template">
+    <tr>
+        <td class="title"></td>
+        <td class="content"></td>
+        <td class="created-at"></td>
+        <td>
+            <a class='btn btn-success mt-2 read' href='/app/crud/read?id={$row[3]}'>Read</a>
+            <a class='btn btn-warning mt-2 update' href='/app/crud/update?id={$row[3]}'>Edit</a>
+            <a class='btn btn-danger mt-2 delete' href='/app/crud/delete?id={$row[3]}'>Delete</a>
+        </td>
+    </tr>
+</template>
+
+<script>
+    var crudInfo = document.getElementById("crud-info");
+    var crudTemplate = document.getElementById("article-template");
+    var baseUrl = "http://localhost:8888";
+
+    var getData = async function() {
+        var url = baseUrl + "/articles";
+
+        await fetch(url)
+            .then((response) => {
+                return response.json();
+            })
+            .then((data) => {
+                data.forEach(element => {
+                    var newArticle = crudTemplate.content.cloneNode(true);
+                    newArticle.querySelector(".title").innerHTML = element.title;
+                    newArticle.querySelector(".content").innerHTML = element.content;
+                    newArticle.querySelector(".created-at").innerHTML = element.created_at;
+                    newArticle.querySelector(".read").href = `/app/crud/read?id=${element.id}`;
+                    newArticle.querySelector(".update").href = `/app/crud/update?id=${element.id}`;
+                    newArticle.querySelector(".delete").href = `/app/crud/delete?id=${element.id}`;
+                    crudInfo.appendChild(newArticle);
+                });
+            });
+
+        return false;
+    };
+    getData()
+</script>
 
 <?php include("../include/include-footer.php") ?>
