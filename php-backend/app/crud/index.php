@@ -14,7 +14,7 @@
     </thead>
     <tbody>
         <?php
-        $stmt = $conn->execute_query("SELECT title, content, created_at, id FROM articles");
+        $stmt = $conn->execute_query("SELECT title, content, created_at, id FROM articles ORDER BY created_at DESC");
         $rows = $stmt->fetch_all();
         echo "\n";
         foreach ($rows as $row) {
@@ -23,7 +23,8 @@
             echo "\t\t\t<td>{$row[1]}</td>\n";
             echo "\t\t\t<td>{$row[2]}</td>\n";
             echo "\t\t\t<td>\n";
-            echo "\t\t\t\t<a class='btn btn-warning' href='/app/crud/update?id={$row[3]}'>Edit</a>\n";
+            echo "\t\t\t\t<a class='btn btn-success mt-2' href='/app/crud/read?id={$row[3]}'>Read</a>\n";
+            echo "\t\t\t\t<a class='btn btn-warning mt-2' href='/app/crud/update?id={$row[3]}'>Edit</a>\n";
             echo "\t\t\t\t<a class='btn btn-danger mt-2' href='/app/crud/delete?id={$row[3]}'>Delete</a>\n";
             echo "\t\t\t</td>\n";
             echo "\t\t</tr>\n";

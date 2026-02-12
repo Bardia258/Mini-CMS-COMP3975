@@ -27,10 +27,8 @@ $result = $stmt->get_result()->fetch_assoc();
     <input type="submit" class="btn btn-success mt-2" value="Submit">
 </form>
 
-<!-- Include the Quill library -->
 <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
 
-<!-- Initialize Quill editor -->
 <script>
     const quill = new Quill('#editor', {
         theme: 'snow'
