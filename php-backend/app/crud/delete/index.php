@@ -21,6 +21,10 @@ if (isset($_POST['delete'])) {
 <p><strong>Content: </strong><span id="content"></span></p>
 <p><strong>Created At: </strong><span id="created-at"></span></p>
 
+<form action="" method="post">
+    <input type="submit" class="btn btn-danger" value="Delete Article" name="delete">
+</form>
+
 <script>
     var baseUrl = "http://localhost:8888";
     const urlParams = new URLSearchParams(window.location.search);
@@ -45,10 +49,6 @@ if (isset($_POST['delete'])) {
 
     getData()
 </script>
-
-<form action="" method="post">
-    <input type="submit" class="btn btn-danger" value="Delete Article" name="delete">
-</form>
 
 
 <?php include("../../include/include-footer.php") ?>
