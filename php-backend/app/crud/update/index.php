@@ -59,11 +59,12 @@ if (!isset($_GET["id"])) {
 if (isset($_POST["content"]) && isset($_POST["posttitle"])) {
 
     extract($_POST);
+    $id = (int) $_GET["id"];
     $content = sanitize_html($content);
     $title = sanitize_input($posttitle);
     $stmt = $conn->prepare("UPDATE articles SET title=?, content=? WHERE id=?");
 
-    $stmt->bind_param("sss", $title, $content, $id);
+    $stmt->bind_param("ssi", $title, $content, $id);
     $stmt->execute();
 
     echo "Updated Successfully!\n";
