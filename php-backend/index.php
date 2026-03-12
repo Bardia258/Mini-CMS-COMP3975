@@ -1,8 +1,8 @@
 <?php
 
-require_once __DIR__ . '/../src/System/DatabaseConnector.php';
-require_once __DIR__ . '/../src/TableGateways/ArticlesGateway.php';
-require_once __DIR__ . '/../src/Controller/ArticlesController.php';
+require_once __DIR__ . '/src/System/DatabaseConnector.php';
+require_once __DIR__ . '/src/TableGateways/ArticlesGateway.php';
+require_once __DIR__ . '/src/Controller/ArticlesController.php';
 use Src\Controller\ArticlesController;
 use Src\System\DatabaseConnector;
 
@@ -11,19 +11,13 @@ $dbConnection = (new DatabaseConnector())->getConnection();
 
 
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: OPTIONS, GET');
+header('Access-Control-Allow-Methods: OPTIONS, GET, POST, PUT, DELETE');
 header('Access-Control-Max-Age: 3600');
 header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
 header('Content-Type: application/json; charset=UTF-8');
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
-    exit;
-}
-
-if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
-    header('HTTP/1.1 405 Method Not Allowed');
-    echo json_encode(['error' => 'Method not allowed']);
     exit;
 }
 
