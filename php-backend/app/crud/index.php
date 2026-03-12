@@ -7,7 +7,7 @@
     <input type="submit" class="btn btn-info" value="Search">
 </form>
 <a href="/app/crud/create" class="btn btn-success mt-2">Create new article</a><br>
-<p id="filter-text">Looking for article titles that contain <strong><span id="filter"></span></strong>.</p>
+<p id="filter-text" class="mt-3">Looking for article titles that contain <strong><span id="filter"></span></strong>.</p>
 <table class="table table-bordered mt-3">
     <thead>
         <tr>
