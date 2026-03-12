@@ -1,77 +1,92 @@
-<?php include("../include/include-crud-header.php") ?>
-<?php require_once("../../db.php") ?>
+<?php
+session_start();
+require_once("../../../db.php"); //
 
-<h2 class="text-center">CRUD Interface</h2>
-<form action="" method="get">
-    <input type="text" name="title" placeholder="Search for an Article">
-    <input type="submit" class="btn btn-info" value="Search">
-</form>
-<a href="/app/crud/create" class="btn btn-success mt-2">Create new article</a><br>
-<p id="filter-text" class="mt-3">Looking for article titles that contain <strong><span id="filter"></span></strong>.</p>
-<table class="table table-bordered mt-3">
-    <thead>
-        <tr>
-            <th scope="col">Article Name:</th>
-            <th scope="col">Article Content:</th>
-            <th scope="col">Created At:</th>
-            <th scope="col">Options:</th>
-        </tr>
-    </thead>
-    <tbody id="crud-info"></tbody>
-</table>
+if (!isset($_SESSION["user_id"])) {
+    header("Location: ../index.php"); //
+    exit();
+}
 
-<template id="article-template">
-    <tr>
-        <td class="title"></td>
-        <td class="content"></td>
-        <td class="created-at"></td>
-        <td>
-            <a class='btn btn-success mt-2 read' href='/app/crud/read?id={$row[3]}'>Read</a>
-            <a class='btn btn-warning mt-2 update' href='/app/crud/update?id={$row[3]}'>Edit</a>
-            <a class='btn btn-danger mt-2 delete' href='/app/crud/delete?id={$row[3]}'>Delete</a>
-        </td>
-    </tr>
-</template>
+// Logic for Search Bonus
+$search = isset($_GET['search']) ? $_GET['search'] : '';
+if ($search) {
+    $stmt = $conn->prepare("SELECT id, title, created_at FROM articles WHERE title LIKE ? ORDER BY created_at DESC");
+    $searchTerm = "%$search%";
+    $stmt->bind_param("s", $searchTerm);
+    $stmt->execute();
+    $result = $stmt->get_result();
+} else {
+    $result = $conn->query("SELECT id, title, created_at FROM articles ORDER BY created_at DESC");
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
 
-<script>
-    var crudInfo = document.getElementById("crud-info");
-    var crudTemplate = document.getElementById("article-template");
-    var baseUrl = "http://localhost:8888";
+<head>
+    <meta charset="UTF-8">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Admin Dashboard</title>
+</head>
 
+<body class="bg-light">
 
-    var getData = async function() {
-        var url = baseUrl + "/articles";
-        const urlParams = new URLSearchParams(window.location.search);
-        const title = urlParams.get('title');
+    <nav class="navbar navbar-dark bg-dark mb-4">
+        <div class="container">
+            <span class="navbar-brand">Mini-CMS Admin</span>
+            <a href="../signout/index.php" class="btn btn-outline-danger btn-sm">Sign Out</a>
+        </div>
+    </nav>
 
-        if (title) 
-            document.getElementById("filter").innerHTML = title;
-        else
-            document.getElementById("filter-text").innerHTML = "No filter provided";
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Article Management</h2>
+            <a href="create.php" class="btn btn-primary">+ Create New Article</a>
+        </div>
 
-        await fetch(url)
-            .then((response) => {
-                return response.json();
-            })
-            .then((data) => {
-                data.forEach(element => {
-                    if (title && !element.title.toLowerCase().includes(title.toLowerCase())) {
-                        return;
-                    }
-                    var newArticle = crudTemplate.content.cloneNode(true);
-                    newArticle.querySelector(".title").innerHTML = element.title;
-                    newArticle.querySelector(".content").innerHTML = element.content;
-                    newArticle.querySelector(".created-at").innerHTML = element.created_at;
-                    newArticle.querySelector(".read").href = `/app/crud/read?id=${element.id}`;
-                    newArticle.querySelector(".update").href = `/app/crud/update?id=${element.id}`;
-                    newArticle.querySelector(".delete").href = `/app/crud/delete?id=${element.id}`;
-                    crudInfo.appendChild(newArticle);
-                });
-            });
+        <form class="d-flex mb-4" method="GET">
+            <input class="form-control me-2" type="search" name="search" placeholder="Search by title..." value="<?php echo htmlspecialchars($search); ?>">
+            <button class="btn btn-outline-success" type="submit">Search</button>
+        </form>
 
-        return false;
-    };
-    getData()
-</script>
+        <div class="card shadow-sm">
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Title</th>
+                            <th>Created At</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php if ($result->num_rows > 0): ?>
+                            <?php while ($row = $result->fetch_assoc()): ?>
+                                <tr>
+                                    <td><?php echo $row['id']; ?></td>
+                                    <td><strong><?php echo htmlspecialchars($row['title']); ?></strong></td>
+                                    <td><?php echo date('M d, Y', strtotime($row['created_at'])); ?></td>
+                                    <td class="text-end">
+                                        <a href="read.php?id=<?php echo $row['id']; ?>" class="btn btn-sm btn-info text-white">View</a>
+                                        <a href="edit.php?id=<?php echo $row['id']; ?>" class="btn btn-sm btn-warning">Edit</a>
+                                        <a href="delete.php?id=<?php echo $row['id']; ?>"
+                                            class="btn btn-sm btn-danger"
+                                            onclick="return confirm('Delete this article?')">Delete</a>
+                                    </td>
+                                </tr>
+                            <?php endwhile; ?>
+                        <?php else: ?>
+                            <tr>
+                                <td colspan="4" class="text-center py-4 text-muted">No articles found.</td>
+                            </tr>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 
-<?php include("../include/include-footer.php") ?>
+    <?php include("../include/include-footer.php"); ?>
+</body>
+
+</html>
