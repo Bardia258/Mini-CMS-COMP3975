@@ -3,39 +3,46 @@
 namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreArticleRequest;
 use App\Models\Article;
-use Illuminate\Http\Request;
+use App\Helpers\SanitizationHelper;
 
 class ArticlesController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of the resource (GET /api/students)
      */
     public function index()
     {
-        return Article::all();
+        $articles = Article::orderBy('created_at', 'desc')->get();
+        return response()->json($articles, 200);
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created resource in storage (POST /api/students)
      */
-    public function store(Request $request)
+    public function store(StoreArticleRequest $request)
     {
-        request()->validate([
-            'Title' => 'required',
-            'Content' => 'required',
-        ]);
+        try {
+            $article = Article::create([
+                'Title' => SanitizationHelper::sanitizeInput($request->Title),
+                'Content' => SanitizationHelper::sanitizeHtml($request->Content ?? '')
+            ]);
 
-        $article = Article::create([
-            'Title' => request('Title'),
-            'Content' => request('Content')
-        ]);
-
-        return response()->json($article, 201);
+            return response()->json([
+                'message' => 'Article created',
+                'data' => $article
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error creating article',
+                'error' => $e->getMessage()
+            ], 422);
+        }
     }
 
     /**
-     * Display the specified resource.
+     * Display the specified resource (GET /api/students/{id})
      */
     public function show($id)
     {
@@ -44,34 +51,41 @@ class ArticlesController extends Controller
         if (!$article) {
             return response()->json(['message' => 'Article not found'], 404);
         }
-        return response()->json($article);
+
+        return response()->json($article, 200);
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the specified resource in storage (PUT /api/students/{id})
      */
-    public function update(Request $request, $id)
+    public function update(StoreArticleRequest $request, $id)
     {
         $article = Article::find($id);
-        // validate input
-        request()->validate([
-            'Title' => 'required',
-            'Content' => 'required',
-        ]);
 
-        $isSuccess = $article->update([
-            'Title' => request('Title'),
-            'Content' => request('Content'),
-        ]);
+        if (!$article) {
+            return response()->json(['message' => 'Article not found'], 404);
+        }
 
-        return response()->json([
-            'success' => $isSuccess,
-            'data' => $article
-        ]);
+        try {
+            $article->update([
+                'Title' => SanitizationHelper::sanitizeInput($request->Title),
+                'Content' => SanitizationHelper::sanitizeHtml($request->Content ?? '')
+            ]);
+
+            return response()->json([
+                'message' => 'Article updated',
+                'data' => $article
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error updating article',
+                'error' => $e->getMessage()
+            ], 422);
+        }
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified resource from storage (DELETE /api/students/{id})
      */
     public function destroy($id)
     {
@@ -80,11 +94,17 @@ class ArticlesController extends Controller
         if (!$article) {
             return response()->json(['message' => 'Article not found'], 404);
         }
-        $isSuccess = $article->delete();
 
-        return response()->json([
-            'success' => $isSuccess
-        ]);
-
+        try {
+            $article->delete();
+            return response()->json([
+                'message' => 'Article deleted'
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error deleting article',
+                'error' => $e->getMessage()
+            ], 422);
+        }
     }
 }
